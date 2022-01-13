@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,33 +19,26 @@ public class PaginationHelperTest {
 
     @BeforeAll
     public static void setUp() {
-        //Item Count > Items Per Page
-        ArrayList<Character> itemList1 = new ArrayList<>();
-        itemList1.add('a');
-        itemList1.add('b');
-        itemList1.add('c');
-        itemList1.add('d');
-        itemList1.add('e');
-        itemList1.add('f');
+        //Creating array list where item count more then items per page
+        ArrayList<Character> itemList1 = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f'));
         helperA = new PaginationHelper(itemList1, 4);
 
-        //Item Count < Items Per Page
-        ArrayList<Character> itemList2 = new ArrayList<>();
-        itemList2.add('a');
+        //Creating array list where item count less then items per page
+        ArrayList<Character> itemList2 = new ArrayList<>(Arrays.asList('a'));
         helperB = new PaginationHelper(itemList2, 4);
 
-        //Item Count = Items Per Page
-        ArrayList<Character> itemList3 = new ArrayList<>();
-        itemList3.add('a');
-        itemList3.add('b');
-        itemList3.add('x');
+        //Creating array list where item count equals items per page
+        ArrayList<Character> itemList3 = new ArrayList<>(Arrays.asList('a', 'b', 'c'));
         helperC = new PaginationHelper(itemList3, 3);
 
-        //Item Count Zero
+        //Creating empty array list where item count equals zero
         ArrayList<Character> itemList4 = new ArrayList<>();
         helperD = new PaginationHelper(itemList4, 3);
     }
 
+    /*
+    * Initializing parameters for page count test
+    */
     private static Stream<Arguments> pageCountParameters() {
         return Stream.of(
                 Arguments.of(helperA, 2),
@@ -54,14 +48,19 @@ public class PaginationHelperTest {
         );
     }
 
-    @ParameterizedTest
+    /*
+     * Test for verifying that items are distributed on the correct amount of pages
+     */
+    @ParameterizedTest(name = "Page count")
     @MethodSource("pageCountParameters")
     void testPageCount(PaginationHelper helper, int expectedPageCount) {
         assertEquals(expectedPageCount, helper.pageCount(),
                 "Total Page Count is " + helper.itemCount() + " and items is " + helper.pageCount());
     }
 
-
+    /*
+     * Initializing parameters for item count test
+     */
     private static Stream<Arguments> itemCountParameters() {
         return Stream.of(
                 Arguments.of(helperA, 6),
@@ -72,12 +71,18 @@ public class PaginationHelperTest {
         );
     }
 
-    @ParameterizedTest
+    /*
+     * Test for verifying that total items count is correct
+     */
+    @ParameterizedTest(name = "Item count")
     @MethodSource("itemCountParameters")
     void testItemCount(PaginationHelper helper, int expectedItemCount) {
         assertEquals(expectedItemCount, helper.itemCount(), "Total Item Count is " + helper.itemCount());
     }
 
+    /*
+     * Initializing parameters for page item count test by index number
+     */
     private static Stream<Arguments> pageItemCountParameters() {
         return Stream.of(
                 Arguments.of(0, 4),
@@ -87,6 +92,9 @@ public class PaginationHelperTest {
         );
     }
 
+    /*
+     * Test for verifying correct amount of items on the page by page index number
+     */
     @ParameterizedTest(name = "Page index # returns amount items on the page")
     @MethodSource("pageItemCountParameters")
     void testPageItemCount(int pageIndex, int expectedItemCount) {
@@ -94,6 +102,9 @@ public class PaginationHelperTest {
                 "Total Items on page where Index # " + pageIndex + " is ");
     }
 
+    /*
+     * Initializing parameters for page index number test with list A (when Item Count more than Items Per Page)
+     */
     private static Stream<Arguments> pageIndexListAParameters() {
         return Stream.of(
                 Arguments.of(0, 0),
@@ -105,13 +116,19 @@ public class PaginationHelperTest {
         );
     }
 
-    @ParameterizedTest(name = "Item index # returns page index of the page when Item Count > Items Per Page}")
+    /*
+     * Test for verifying correct index of the page by item index number for list A (Item Count more than Items Per Page)
+     */
+    @ParameterizedTest(name = "Item index # returns page index of the page when Item Count more than Items Per Page}")
     @MethodSource("pageIndexListAParameters")
     void testPageIndexItemCountMoreThenItemsPerPage(int itemIndex, int pageIndex) {
         assertEquals(pageIndex, helperA.pageIndex(itemIndex),
-                "When item index: " + itemIndex + ", Page Index of the page is");
+                "When item index: " + itemIndex + ", Page Index of the page is not right");
     }
 
+    /*
+     * Initializing parameters for page index number test with list B (when Item Count less than Items Per Page)
+     */
     private static Stream<Arguments> pageIndexListBParameters() {
         return Stream.of(
                 Arguments.of(0, 0),
@@ -120,13 +137,19 @@ public class PaginationHelperTest {
         );
     }
 
+    /*
+     * Test for verifying correct index of the page by item index number for list B (Item Count less than Items Per Page)
+     */
     @ParameterizedTest(name = "Item index # returns page index of the page when Item Count < Items Per Page}")
     @MethodSource("pageIndexListBParameters")
     void testPageIndexItemCountLessThenItemsPerPage(int itemIndex, int pageIndex) {
         assertEquals(pageIndex, helperB.pageIndex(itemIndex),
-                "When item index: " + itemIndex + ", Page Index of the page is ");
+                "When item index: " + itemIndex + ", Page Index of the page is not right");
     }
 
+    /*
+     * Initializing parameters for page index number test with list C (when Item Count equals Items Per Page)
+     */
     private static Stream<Arguments> pageIndexListCParameters() {
         return Stream.of(
                 Arguments.of(0, 0),
@@ -136,13 +159,19 @@ public class PaginationHelperTest {
         );
     }
 
+    /*
+     * Test for verifying correct index of the page by item index number for list C (Item Count equals Items Per Page)
+     */
     @ParameterizedTest(name = "Item index # returns page index of the page when Item Count = Items Per Page}")
     @MethodSource("pageIndexListCParameters")
     void testPageIndexItemCountEqualItemsPerPage(int itemIndex, int pageIndex) {
         assertEquals(pageIndex, helperC.pageIndex(itemIndex),
-                "When item index: " + itemIndex + ", Page Index of the page is");
+                "When item index: " + itemIndex + ", Page Index of the page is not right");
     }
 
+    /*
+     * Initializing parameters for page index number test with list D (when Item Count equals zero or negative, returned result -1)
+     */
     private static Stream<Arguments> pageIndexListDParameters() {
         return Stream.of(
                 Arguments.of(0, -1),
@@ -150,6 +179,9 @@ public class PaginationHelperTest {
         );
     }
 
+    /*
+     * Test for verifying correct index of the page by item index number for list D (Item Count is zero or negative, returned result -1)
+     */
     @ParameterizedTest(name = "Item index # returns -1 when Item Count zero}")
     @MethodSource("pageIndexListDParameters")
     void testPageIndexItemCountZero(int itemIndex, int pageIndex) {
